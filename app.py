@@ -9,8 +9,7 @@ import os
 import json
 import re
 from dotenv import load_dotenv
-from waitress import serve
-# from app import app
+
 
 print(astrapy.__version__)
 load_dotenv()
@@ -140,7 +139,3 @@ def upload_file():
         except json.JSONDecodeError as e:
             return jsonify({"status": "error", "message": f"Failed to decode JSON: {str(e)}"}), 400
 
-
-# if __name__ == '__main__':
-#     app.run()
-serve(app, host='0.0.0.0', port=8080)
