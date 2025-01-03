@@ -140,4 +140,4 @@ def upload_file():
             return jsonify({"status": "error", "message": f"Failed to decode JSON: {str(e)}"}), 400
 
 if __name__ == '__main__':
-    app.run(debug=true)
+    app.run(debug=True)
