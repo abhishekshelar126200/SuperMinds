@@ -1,3 +1,4 @@
+import astrapy
 from astrapy import DataAPIClient
 from langchain_openai import OpenAI  # Correct import statement for OpenAI
 from langchain.prompts import PromptTemplate
@@ -8,6 +9,10 @@ import os
 import json
 import re
 from dotenv import load_dotenv
+from waitress import serve
+# from app import app
+
+print(astrapy.__version__)
 load_dotenv()
 app = Flask(__name__)
 CORS(app)
@@ -136,5 +141,6 @@ def upload_file():
             return jsonify({"status": "error", "message": f"Failed to decode JSON: {str(e)}"}), 400
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# if __name__ == '__main__':
+#     app.run()
+serve(app, host='0.0.0.0', port=8080)
