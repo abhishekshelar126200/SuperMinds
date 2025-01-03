@@ -1,4 +1,4 @@
-astropy==1.5.2
+astrapy==1.5.2
 flask==3.0.0
 flask-cors==4.0.1
 python-dotenv==1.0.1
