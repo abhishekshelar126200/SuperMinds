@@ -15,7 +15,7 @@ from waitress import serve
 print(astrapy.__version__)
 load_dotenv()
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=["http://localhost:5173"])
 
 # Initialize the client and connect to the database
 client = DataAPIClient(os.getenv('ASTRADB'))
