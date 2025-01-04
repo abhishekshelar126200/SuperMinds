@@ -10,8 +10,6 @@ import json
 import re
 from dotenv import load_dotenv
 
-
-print(astrapy.__version__)
 load_dotenv()
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:5173"])
@@ -22,7 +20,7 @@ db = client.get_database_by_api_endpoint(
     os.getenv('ENDPOINT')
 )
 
-def analyze(data, filename):
+def analyze(data, filename, postType):
     
     existing_collections = db.list_collections()
     collection_name = filename
@@ -70,24 +68,24 @@ def analyze(data, filename):
             template=""" 
             {data} 
             This is the input in the form of json format which includes the average engagement metrics for instagram post type 
-            (e.g. static post, carousel, reel). Your task is to analyze the data and provide insight into the data compared to carousel data in a humanized way.
+            (e.g. static post, carousel, reel). Your task is to analyze the data and provide insight into the data compared to {postType} data in a humanized way.
             Example: Carousel posts have 20% higher engagement than static posts, Reels drive 2x more comments compared to other formats. etc.Give the output in JSON format in the form
             insights: 
-            static_vs_reel: 
+            {postType}_vs_post type other than {postType}: 
                 likes_difference: ,
                 shares_difference: ,
                 comments_difference: 
             ,
-            carousel_vs_reel: 
+            {postType}_vs_post type other than {postType}: 
                 likes_difference: ,
                 shares_difference: ,
                 comments_difference: 
             ,
             overall_engagement: 
-                carousel_vs_static: ,
-                reel_vs_static: 
+                {postType}_vs_post type other than {postType}: ,
+                {postType}_vs_post type other than {postType}: 
             In Humanize way and only return the json data""",
-            input_variables=["data"]
+            input_variables=["data","postType"]
         )
 
         # Initialize the OpenAI model
@@ -98,7 +96,7 @@ def analyze(data, filename):
 
         try:
             # Get response from the chain
-            response = chain.invoke(input={"data": metrics_data})
+            response = chain.invoke(input={"data": metrics_data,"postType":postType})
            
             response_content = response.content  # Extract content of the AI message
             json_part = re.sub(r"```json|```", "", response_content )
@@ -123,6 +121,8 @@ def upload_file():
     if request.method == 'POST':
         # Get the file from the request
         file = request.files['file']
+        postType=request.form['postType']
+   
         filename = os.path.splitext(file.filename)[0]
 
         # Read the file content
@@ -134,7 +134,7 @@ def upload_file():
         try:
             # Parse the JSON data
             data = json.loads(json_data)
-            response = analyze(data, filename)
+            response = analyze(data, filename, postType)
             return jsonify(response), 200
         except json.JSONDecodeError as e:
             return jsonify({"status": "error", "message": f"Failed to decode JSON: {str(e)}"}), 400
