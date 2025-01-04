@@ -45,7 +45,7 @@ function App() {
         });
       }, 50); // Adjust interval speed for smoother animation
 
-      const response = await axios.post("http://localhost:5000/upload", formData, {
+      const response = await axios.post("https://analyzer-k3bc.onrender.com/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
