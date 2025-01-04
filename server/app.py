@@ -9,6 +9,8 @@ import os
 import json
 import re
 from dotenv import load_dotenv
+import random
+import string
 
 load_dotenv()
 app = Flask(__name__, static_folder='../client/dist', static_url_path='')
@@ -19,18 +21,18 @@ client = DataAPIClient(os.getenv('ASTRADB'))
 db = client.get_database_by_api_endpoint(
     os.getenv('ENDPOINT')
 )
+def generate_unique_id(length=8):
+    # Generate a unique ID with characters between a-z
+    return ''.join(random.choices(string.ascii_lowercase, k=length))
 
-def analyze(data, filename, postType):
+def analyze(data, postType):
     
-    existing_collections = db.list_collections()
-    collection_name = filename
-    if collection_name not in existing_collections:
-        db.create_collection(collection_name)
-        print(f"Created collection: {collection_name}")
-    else:
-        print(f"Collection already exists: {collection_name}")
+    unique_id = generate_unique_id()
 
-    collection = db[filename]
+    db.create_collection(unique_id)
+    print(f"Created collection: {unique_id}")
+
+    collection = db[unique_id]
     collection.insert_many(data) 
 
 
@@ -66,25 +68,23 @@ def analyze(data, filename, postType):
         # Prompt template for the analysis
         prompt = PromptTemplate(
             template=""" 
-            {data} 
-            This is the input in the form of json format which includes the average engagement metrics for instagram post type 
-            (e.g. static post, carousel, reel). Your task is to analyze the data and provide insight into the data compared to {postType} data in a humanized way.
-            Example: Carousel posts have 20% higher engagement than static posts, Reels drive 2x more comments compared to other formats. etc.Give the output in JSON format in the form
-            insights: 
-            {postType}_vs_post type other than {postType}: 
-                likes_difference: ,
-                shares_difference: ,
-                comments_difference: 
-            ,
-            {postType}_vs_post type other than {postType}: 
-                likes_difference: ,
-                shares_difference: ,
-                comments_difference: 
-            ,
-            overall_engagement: 
-                {postType}_vs_post type other than {postType}: ,
-                {postType}_vs_post type other than {postType}: 
-            In Humanize way and only return the json data""",
+            {data}
+            Analyze the provided JSON average engagement data of(like,shares,comments) for Instagram post types (e.g., static post, carousel, reel). Compare the metrics for {postType} with other post types. The output should be in JSON format, structured as follows:
+            "insights": 
+                "1-{postType}_vs_<anotherPostType>": 
+                    "likes_difference": "<comparision>",
+                    "shares_difference": "<comparision>",
+                    "comments_difference": "<comparision>"
+                ,
+                "2-{postType}_vs_<anotherPostType>": 
+                    "likes_difference": "<comparision>",
+                    "shares_difference": "<comparision>",
+                    "comments_difference": "<comparision>"
+                ,
+                "3-overall_engagement": 
+                    "{postType}_vs_<anotherPostType>": "<summary>",
+                    "{postType}_vs_<anotherPostType>": "<summary>"
+            Provide comparisons in a humanized way, e.g., "Carousel posts have 20% higher engagement than static posts," and return only the JSON data.""",
             input_variables=["data","postType"]
         )
 
@@ -125,8 +125,7 @@ def upload_file():
         # Get the file from the request
         file = request.files['file']
         postType=request.form['postType']
-        print(postType)
-        filename = os.path.splitext(file.filename)[0]
+    
 
         # Read the file content
         file_content = file.read().decode('utf-8').splitlines()
@@ -137,10 +136,9 @@ def upload_file():
         try:
             # Parse the JSON data
             data = json.loads(json_data)
-            response = analyze(data, filename, postType)
+            response = analyze(data, postType)
             return jsonify(response), 200
         except json.JSONDecodeError as e:
             return jsonify({"status": "error", "message": f"Failed to decode JSON: {str(e)}"}), 400
-
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
