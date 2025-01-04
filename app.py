@@ -3,7 +3,7 @@ from astrapy import DataAPIClient
 from langchain_openai import OpenAI  # Correct import statement for OpenAI
 from langchain.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify,send_from_directory
 from flask_cors import CORS
 import os
 import json
@@ -11,8 +11,8 @@ import re
 from dotenv import load_dotenv
 
 load_dotenv()
-app = Flask(__name__)
-CORS(app, origins=["http://localhost:5173"])
+app = Flask(__name__, static_folder='../client/dist', static_url_path='')
+CORS(app)
 
 # Initialize the client and connect to the database
 client = DataAPIClient(os.getenv('ASTRADB'))
@@ -115,6 +115,9 @@ def analyze(data, filename, postType):
         print(f"An error occurred while fetching data from the database: {e}")
         return {"status": "error", "message": str(e)}
 
+@app.route('/')
+def serve():
+    return send_from_directory(app.static_folder, 'index.html')
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -122,7 +125,7 @@ def upload_file():
         # Get the file from the request
         file = request.files['file']
         postType=request.form['postType']
-   
+        print(postType)
         filename = os.path.splitext(file.filename)[0]
 
         # Read the file content
