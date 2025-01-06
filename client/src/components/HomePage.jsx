@@ -15,7 +15,7 @@ function HomePage() {
 
   useEffect(()=>{
     const fetchFileNames=async ()=>{
-      const response=await axios.get('http://localhost:5000/fileNames')
+      const response=await axios.get('https://superminds-1.onrender.com/fileNames')
       const result=await response.data;
       setFileNames(result);
     }

@@ -26,7 +26,7 @@ const SocialAnalysis = () => {
     }
     const formData = new FormData();
     formData.append("file", file);
-    const response = await axios.post("http://localhost:5000/uploadFile", formData, {
+    const response = await axios.post("https://superminds-1.onrender.com/uploadFile", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

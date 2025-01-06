@@ -15,7 +15,7 @@ function Analytics() {
   useEffect(() => {
     const fetchData = async () => {
       const response = await axios.get(
-        `http://localhost:5000/engagementData/${dataset}`
+        `https://superminds-1.onrender.com/engagementData/${dataset}`
       );
       const result = await response.data;
       setTotalData(result["totalData"]);
