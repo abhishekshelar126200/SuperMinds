@@ -1,0 +1,217 @@
+.analysis-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: linear-gradient(to bottom right, #ffffff, #f8f9ff);
+    min-height: 100vh;
+  }
+  
+  .analysis-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  
+  .main-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    background: linear-gradient(to right, #1f2937, #4f46e5);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  
+  .subtitle {
+    color: #6b7280;
+    font-size: 1.1rem;
+  }
+  
+  .input-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 800px;
+    margin: 0 auto 3rem;
+  }
+  
+  .upload-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+  }
+  
+  .upload-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .file-upload-area {
+    border: 2px dashed #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .file-upload-area:hover {
+    border-color: #4f46e5;
+    background: #f8f9ff;
+  }
+  
+  .file-input {
+    opacity: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+  }
+  
+  .file-name {
+    display: block;
+    margin-top: 1rem;
+    color: #4f46e5;
+    font-weight: 500;
+  }
+  
+  .post-type-select {
+    width: 100%;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+    background: white;
+    font-size: 1rem;
+    color: #1f2937;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .post-type-select:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+  }
+  
+  .submit-button {
+    background: linear-gradient(to right, #4f46e5, #7c3aed);
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .submit-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+  }
+  
+  .submit-button.loading {
+    opacity: 0.8;
+    cursor: wait;
+  }
+  
+  .results-section {
+    margin-top: 4rem;
+  }
+  
+  .results-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: #1f2937;
+  }
+  
+  .insights-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+  
+  .insight-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+  }
+  
+  .insight-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .card-icon {
+    color: #4f46e5;
+  }
+  
+  .card-header h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+  }
+  
+  .card-content p {
+    color: #6b7280;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .insights-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .analysis-container {
+      padding: 1rem;
+    }
+  
+    .main-title {
+      font-size: 2rem;
+    }
+  
+    .subtitle {
+      font-size: 1rem;
+    }
+  
+    .insights-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  
+    .upload-card {
+      padding: 1.5rem;
+    }
+  
+    .file-upload-area {
+      padding: 1.5rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .main-title {
+      font-size: 1.75rem;
+    }
+  
+    .card-header h3 {
+      font-size: 1.1rem;
+    }
+  }
