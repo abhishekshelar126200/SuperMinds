@@ -1,4 +1,4 @@
-astropy
+astrapy
 flask
 flask-cors
 python-dotenv
