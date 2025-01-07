@@ -29,7 +29,7 @@ def generate_unique_id(length=8):
     # Generate a unique ID with characters between a-z
     return ''.join(random.choices(string.ascii_lowercase, k=length))
 
-def analyze(postType,date):
+def analyze(postType,date,dataset):
     
     # unique_id = generate_unique_id()
 
@@ -38,7 +38,7 @@ def analyze(postType,date):
 
     # collection = db[unique_id]
     # collection.insert_many(data) 
-    collections=db['socialmediadata']
+    collections=db[dataset]
 
     try:
         # Fetch all documents from the collection
@@ -113,18 +113,14 @@ def analyze(postType,date):
             json_part = re.sub(r"```json|```", "", response_content )
             
             # Return the response as JSON
-            return {"filterData":filterData,'comparision':json_part}
-
-           
-           
-            
+            return {"filterData":filterData,'comparision':json_part,'msg':1}
         except Exception as e:
-            print(f"An error occurred during analysis: {e}")
-            return {"status": "error", "message": str(e)}
+            
+            return {"msg": 0}
 
     except Exception as e:
-        print(f"An error occurred while fetching data from the database: {e}")
-        return {"status": "error", "message": str(e)}
+        
+        return {"msg": 0}
 
 @app.route('/')
 def serve():
@@ -147,8 +143,9 @@ def comparisionAnalytics():
     return send_from_directory(app.static_folder, 'index.html')
 
 
-@app.route('/fileNames')
-def filenames():
+
+
+def nameOfFiles():
     response = db.list_collections()
     fileNames=[]
     for file in response:
@@ -159,45 +156,52 @@ def filenames():
     # Return as JSON
     return fileNames
 
+@app.route('/fileNames')
+def filenames():
+    return nameOfFiles()
+
+
+@app.route('/viewData/<dataset>')
+def viewDataset(dataset):
+    collection=db[dataset]
+    documents = collection.find({})
+    data=[]
+    for doc in documents:
+        data.append(doc)
+    return data
+
+@app.route('/deleteDataset/<datasetName>')
+def deleteDataset(datasetName):
+    response=db.drop_collection(datasetName)
+    return response
+
 @app.route('/engagementData/<dataset>', methods=['GET', 'POST'])
 def sendData(dataset):
-    if(dataset=='Our Data'):
-        collections = db['socialmediadata']
-    else:
-        collections = db[dataset]
+    collections = db[dataset]
     
     # Fetch only the required fields to reduce data transfer
     documents = collections.find({})
     
     metrics = {}
     actualData = []
-    totalData={
-        "Carousel":{
-        "likes":0,
-        "shares":0,
-        "comments":0
-        },
-         "Reel":{
-        "likes":0,
-        "shares":0,
-        "comments":0
-        },
-         "Static Post":{
-        "likes":0,
-        "shares":0,
-        "comments":0
-        }
-    }
+    totalData={}
     
     for doc in documents:
         # Add the document to the actual data list
         actualData.append(doc)
         
+        # Get post type and post date
         post_type = doc.get("post_type")
         post_date = doc.get("post_Date")
-        totalData[post_type]['likes']+=doc['likes']
-        totalData[post_type]['shares']+=doc['shares']
-        totalData[post_type]['comments']+=doc['comments']
+        
+        # Ensure the post_type exists in totalData
+        if post_type not in totalData:
+            totalData[post_type] = {'likes': 0, 'shares': 0, 'comments': 0}
+        
+        # Safely update totals
+        totalData[post_type]['likes'] += doc.get('likes', 0)
+        totalData[post_type]['shares'] += doc.get('shares', 0)
+        totalData[post_type]['comments'] += doc.get('comments', 0)
 
         # Initialize nested dictionaries using setdefault
         post_metrics = metrics.setdefault(post_type, {}).setdefault(post_date, {
@@ -235,14 +239,16 @@ def uploadFile():
     file = request.files['file']
     filename_with_extension = file.filename
     filename_without_extension = os.path.splitext(filename_with_extension)[0]
-
+    files=nameOfFiles()
+    if len(files)==7:
+        return {"msg":"You Exceed Your Maximum limit of uploading files"}
     file_content = file.read().decode('utf-8').splitlines()
     json_data = ''.join(file_content)
 
     try:
         # Parse the JSON data
         data = json.loads(json_data)
-
+        
         # Check if data is a list
         if not isinstance(data, list):
             return {"msg": "Uploaded data must be a list of objects."}
@@ -281,6 +287,7 @@ def upload_file():
         # file = request.files['file']
         postType=request.form['postType']
         date=request.form['date']
+        dataset=request.form['dataset']
 
         # Read the file content
         # file_content = file.read().decode('utf-8').splitlines()
@@ -291,11 +298,10 @@ def upload_file():
         try:
             # Parse the JSON data
             # data = json.loads(json_data)
-            response = analyze(postType,date)
+            response = analyze(postType,date,dataset)
             return jsonify(response), 200
         except json.JSONDecodeError as e:
-            return jsonify({"status": "error", "message": f"Failed to decode JSON: {str(e)}"}), 400
-
+            return {"msg": 0}
 
 if __name__ == '__main__':
   app.run(host="0.0.0.0", port=5000)
