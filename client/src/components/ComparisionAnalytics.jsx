@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import {Link} from 'react-router-dom'
 import {
   Chart as ChartJS,
   LineElement,
@@ -11,6 +12,7 @@ import {
 } from "chart.js";
 import { Line, Pie,Bar } from "react-chartjs-2";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
 // Register Chart.js components
 ChartJS.register(
@@ -25,12 +27,15 @@ ChartJS.register(
 
 const Charts = () => {
   // State for date picker
-  const [selectedDate, setSelectedDate] = useState("2024-10-01");
+  const [selectedDate, setSelectedDate] = useState(localStorage.getItem('postDate') || "2024-10-01");
   const [loading,setIsLoading]=useState(true);
   // State for post type selector
   const [postType, setPostType] = useState(localStorage.getItem('postType') || "Reel");
   const [responseData,setResponseData]=useState(null)
   const [insightData,setInsightData]=useState(null)
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const dataset = queryParams.get("dataset");
 
   const renderSkeleton = () => (
     <div className="row g-5 mt-4">
@@ -59,36 +64,38 @@ const Charts = () => {
       const formData = new FormData();
       formData.append("postType", postType);
       formData.append("date",selectedDate);
-
-      setIsLoading(true); // Start loading
-
-      try {
+      formData.append("dataset",dataset);
       
-
-          const response = await axios.post("https://superminds-1.onrender.com/upload", formData, {
+      try{
+        const response = await axios.post("https://superminds-1.onrender.com/upload", formData, {
           headers: {
               "Content-Type": "multipart/form-data",
           },
           
           });
           const result = await response.data;
-          const insights=JSON.parse(result['comparision'].trim());
-          const filterData=result['filterData'];
-          setInsightData(insights);
+          if(result['msg']==0)
+          {
+            alert('Something Went Wrong! Try Again By Refreshing the Webpage or Check Your internet');
+            
+          }
+          else{
+            const insights=JSON.parse(result['comparision'].trim());
+            const filterData=result['filterData'];
+            setInsightData(insights);
+            
+            setResponseData(filterData);
+          }
+      }
+      catch{
+        alert('Something Went Wrong! Try Again By Refreshing the Webpage or Check Your internet');
+      }
           
-          setResponseData(filterData);
 
-          
-          
-      } catch (error) {
-          console.error("Error uploading file:", error);
-      } 
-      // finally {
-      //     setTimeout(() => setIsLoading(false), 500); // Add slight delay before hiding
-      // }
-  }
+    }
+
   fetchData()
-  },[postType]);
+  },[postType,selectedDate]);
   const postData = {
     comments: responseData ? responseData[0]["comments"]:"",
     likes: responseData ? responseData[0]["likes"] :"",
@@ -162,11 +169,17 @@ const Charts = () => {
     setInsightData(null);
     setResponseData(null);
   }
+  const handleDateChange=(e)=>{
+    setSelectedDate(e.target.value)
+    localStorage.setItem('postDate',e.target.value);
+    setInsightData(null);
+    setResponseData(null);
+  }
 
   return (
     <div className="container mt-5">
   <h2 className="text-center mb-5 fw-bold">📊 Social Media Engagement Insights</h2>
-
+  <h3 className="text-center mb-5 fw-bold text-primary"><Link to={`/viewData/${dataset}`}>Dataset - {dataset}</Link></h3>
   {/* Date Picker and Post Type Selector */}
   <div className="row g-3 mb-5">
     {/* Date Picker */}
@@ -176,7 +189,7 @@ const Charts = () => {
         <input
           type="date"
           value={selectedDate}
-          onChange={(e) => setSelectedDate(e.target.value)}
+          onChange={handleDateChange}
           className="form-control"
           id="datePicker"
           min="2024-10-01" 
@@ -211,7 +224,7 @@ const Charts = () => {
     <div className="col-lg-4 col-md-6 col-sm-12">
       <div className="card shadow-sm border-0 h-100">
         <div className="card-body">
-          <h5 className="card-title fw-bold mb-3 text-center">{Object.keys(insightData['insights'])[0]}</h5>
+          <h5 className="card-title fw-bold mb-3 text-center text-primary">{Object.keys(insightData['insights'])[0]}</h5>
           <ul className="list-unstyled">
             <li className="mb-2"><strong>Likes Difference:</strong> {insightData['insights'][Object.keys(insightData['insights'])[0]]['likes_difference']}</li>
             <li className="mb-2"><strong>Shares Difference:</strong> {insightData['insights'][Object.keys(insightData['insights'])[0]]['shares_difference']}</li>
@@ -225,7 +238,7 @@ const Charts = () => {
     <div className="col-lg-4 col-md-6 col-sm-12">
       <div className="card shadow-sm border-0 h-100">
         <div className="card-body">
-          <h5 className="card-title fw-bold mb-3 text-center">{Object.keys(insightData['insights'])[1]}</h5>
+          <h5 className="card-title fw-bold mb-3 text-center text-primary">{Object.keys(insightData['insights'])[1]}</h5>
           <ul className="list-unstyled">
             <li className="mb-2"><strong>Likes Difference:</strong>  {insightData['insights'][Object.keys(insightData['insights'])[1]]['likes_difference']}</li>
             <li className="mb-2"><strong>Shares Difference:</strong> {insightData['insights'][Object.keys(insightData['insights'])[1]]['shares_difference']}</li>
@@ -239,7 +252,7 @@ const Charts = () => {
     <div className="col-lg-4 col-md-12 col-sm-12">
       <div className="card shadow-sm border-0 h-100">
         <div className="card-body">
-          <h5 className="card-title fw-bold mb-3 text-center">Overall Engagement</h5>
+          <h5 className="card-title fw-bold mb-3 text-center text-primary">Overall Engagement</h5>
           <ul className="list-unstyled">
             <li className="mb-2"><strong>{Object.keys(insightData['overall_engagement'])[0]}:</strong> {insightData['overall_engagement'][Object.keys(insightData['overall_engagement'])[0]]}</li>
             <li><strong>{Object.keys(insightData['overall_engagement'])[1]}:</strong> {insightData['overall_engagement'][Object.keys(insightData['overall_engagement'])[1]]}</li>

@@ -4,8 +4,8 @@ import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function HomePage() {
-  const [selectedDataset, setSelectedDataset] = useState(localStorage.getItem('dataset') || 'Our Data');
-  const [datasets,setDatasets]=useState(JSON.parse(localStorage.getItem('datasets')) || ['Our Data']);
+  const [selectedDataset, setSelectedDataset] = useState(localStorage.getItem('dataset') || 'socialmediadata');
+  const [datasets,setDatasets]=useState(JSON.parse(localStorage.getItem('datasets')) || ['socialmediadata']);
   const [fileNames,setFileNames]=useState(null)
   const handleDatasetChange = (e) => {
     localStorage.setItem('dataset',e.target.value)
@@ -50,13 +50,14 @@ function HomePage() {
             value={selectedDataset}
             onChange={handleDatasetChange}
           >
-            <option value="">
+            <option value="" disabled>
               Choose a dataset
             </option>
-            <option value="Our Data">Our Dataset</option>
             {fileNames ? fileNames.map((set,index)=>(
               <option key={index} value={`${set}`}>{set}</option>
-            )):""}
+            )):<option class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </option>}
             
           </select>
         </div>

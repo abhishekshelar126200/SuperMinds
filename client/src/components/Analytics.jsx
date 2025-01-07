@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import OverallLineChart from "./OverallLineChart";
 import AEMLineChart from "./AEMLineChart";
-import { useLocation } from "react-router-dom";
+import { useLocation,Link } from "react-router-dom";
 import axios from "axios";
 
 function Analytics() {
@@ -14,13 +14,13 @@ function Analytics() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await axios.get(
-        `https://superminds-1.onrender.com/engagementData/${dataset}`
-      );
-      const result = await response.data;
-      setTotalData(result["totalData"]);
-      setPostData(result["actualData"]);
-      setChartData(result["metricsData"]);
+      
+        const response = await axios.get(`https://superminds-1.onrender.com/engagementData/${dataset}`);
+        const result = await response.data;
+        setTotalData(result["totalData"]);
+        setPostData(result["actualData"]);
+        setChartData(result["metricsData"]);
+      
     };
     fetchData();
   }, []);
@@ -48,6 +48,7 @@ function Analytics() {
   return (
     <div className="container my-4">
       <h2 className="mb-4 text-center">Overall Analysis Result</h2>
+      <h3 className="mb-4 text-center text-primary"><Link to={`/viewData/${dataset}`}>Dataset - {dataset}</Link></h3>
       {totalData ? (
         <div className="mb-2">
           <div className="row g-4 mt-4">
@@ -55,7 +56,7 @@ function Analytics() {
               <div className="card h-100">
                 <div className="card-body">
                   <div className="d-flex align-items-center mb-3">
-                    <h5 className="card-title m-0">Carousel</h5>
+                    <h5 className="card-title m-0 text-primary">Carousel</h5>
                   </div>
                   <p>Total Likes For Carousel={totalData["Carousel"]["likes"]}</p>
                   <p>Total Shares For Carousel={totalData["Carousel"]["shares"]}</p>
@@ -68,7 +69,7 @@ function Analytics() {
               <div className="card h-100">
                 <div className="card-body">
                   <div className="d-flex align-items-center mb-3">
-                    <h5 className="card-title m-0">Reel</h5>
+                    <h5 className="card-title m-0 text-primary">Reel</h5>
                   </div>
                   <p>Total Likes For Reel={totalData["Reel"]["likes"]}</p>
                   <p>Total Shares For Reel={totalData["Reel"]["shares"]}</p>
@@ -81,7 +82,7 @@ function Analytics() {
               <div className="card h-100">
                 <div className="card-body">
                   <div className="d-flex align-items-center mb-3">
-                    <h5 className="card-title m-0">Static Post</h5>
+                    <h5 className="card-title m-0 text-primary">Static Post</h5>
                   </div>
                   <p>Total Likes For Static Post={totalData["Static Post"]["likes"]}</p>
                   <p>Total Shares For Static Post={totalData["Static Post"]["shares"]}</p>
