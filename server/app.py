@@ -324,7 +324,7 @@ def uploadFile():
         for i in range(0, len(data), batch_size):
             collection.insert_many(data[i:i + batch_size])
 
-        return {"msg": "Data uploaded successfully."}, 200
+        return {"msg": 1}, 200
 
     except json.JSONDecodeError:
         return {"msg": "Invalid JSON format."}, 400
