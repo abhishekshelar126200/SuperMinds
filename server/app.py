@@ -127,6 +127,43 @@ def serve():
     # Serve the index.html for any route not found on the server
     return send_from_directory(app.static_folder, 'index.html')
 
+@app.route('/averageEngagementMetrics/<datasetName>/<date>')
+def AverageEngagementMetrics(datasetName,date):
+    collections=db[datasetName]
+
+    
+    # Fetch all documents from the collection
+    documents = collections.find({})
+    # documents1=collections.find({})
+    # Initialize counters
+    metrics = {}
+    for doc in documents:
+        if(doc['post_Date']==date):
+            post_type = doc['post_type']
+            if post_type not in metrics:
+                metrics[post_type] = {"likes": 0, "shares": 0, "comments": 0, "count": 0}
+            
+            metrics[post_type]["likes"] += doc.get("likes", 0)
+            metrics[post_type]["shares"] += doc.get("shares", 0)
+            metrics[post_type]["comments"] += doc.get("comments", 0)
+            metrics[post_type]["count"] += 1
+    
+    metrics_data = {}
+    
+    
+    # Calculate averages
+    for post_type, values in metrics.items():
+        avg_likes = values["likes"] / values["count"]
+        avg_shares = values["shares"] / values["count"]
+        avg_comments = values["comments"] / values["count"]
+        metrics_data[post_type] = {
+            "averageLikes": avg_likes,
+            "averageShares": avg_shares,
+            "averageComments": avg_comments
+        }
+        
+    return metrics_data
+
 @app.route('/userdata')
 def userdata():
     # Serve the index.html for any route not found on the server
