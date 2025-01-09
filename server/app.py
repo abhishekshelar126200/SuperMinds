@@ -147,6 +147,15 @@ def AverageEngagementMetrics(datasetName,date):
             metrics[post_type]["shares"] += doc.get("shares", 0)
             metrics[post_type]["comments"] += doc.get("comments", 0)
             metrics[post_type]["count"] += 1
+        else:
+            post_type = doc['post_type']
+            if post_type not in metrics:
+                metrics[post_type] = {"likes": 0, "shares": 0, "comments": 0, "count": 0}
+            
+            metrics[post_type]["likes"] += doc.get("likes", 0)
+            metrics[post_type]["shares"] += doc.get("shares", 0)
+            metrics[post_type]["comments"] += doc.get("comments", 0)
+            metrics[post_type]["count"] += 
     
     metrics_data = {}
     
