@@ -155,7 +155,7 @@ def AverageEngagementMetrics(datasetName,date):
             metrics[post_type]["likes"] += doc.get("likes", 0)
             metrics[post_type]["shares"] += doc.get("shares", 0)
             metrics[post_type]["comments"] += doc.get("comments", 0)
-            metrics[post_type]["count"] += 
+            metrics[post_type]["count"] += 1
     
     metrics_data = {}
     
