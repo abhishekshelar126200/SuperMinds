@@ -280,46 +280,57 @@ def sendData(dataset):
     return {"actualData": actualData, "metricsData": metrics_data, "totalData":totalData}
 
 
-@app.route('/uploadFile',methods=['POST'])
+@app.route('/uploadFile', methods=['POST'])
 def uploadFile():
-    file = request.files['file']
-    filename_with_extension = file.filename
-    filename_without_extension = os.path.splitext(filename_with_extension)[0]
-    files=nameOfFiles()
-    if len(files)==7:
-        return {"msg":"You Exceed Your Maximum limit of uploading files"}
-    file_content = file.read().decode('utf-8').splitlines()
-    json_data = ''.join(file_content)
-
     try:
-        # Parse the JSON data
-        data = json.loads(json_data)
-        
-        # Check if data is a list
-        if not isinstance(data, list):
-            return {"msg": "Uploaded data must be a list of objects."}
+        # Validate file existence
+        file = request.files.get('file')
+        if not file:
+            return {"msg": "No file uploaded."}, 400
 
-        # Validate each object in the list
+        # Extract filename and ensure uniqueness
+        filename_with_extension = file.filename
+        filename_without_extension = os.path.splitext(filename_with_extension)[0]
+        files = nameOfFiles()
+        if len(files) >= 7:
+            return {"msg": "You exceed your maximum limit of uploading files."}, 400
+
+        # Read file content
+        file_content = file.read().decode('utf-8').splitlines()
+        json_data = ''.join(file_content)
+
+        # Parse JSON data
+        data = json.loads(json_data)
+
+        # Validate data format
+        if not isinstance(data, list):
+            return {"msg": "Uploaded data must be a list of objects."}, 400
+
         required_keys = {"post_id", "post_type", "post_Date", "likes", "shares", "comments"}
         for obj in data:
-            # Check if obj is a dictionary
             if not isinstance(obj, dict):
-                return {"msg": "Each item in the list must be an object."}
-
-            # Check if all required keys are present and not empty
-            if required_keys != obj.keys():
-                
-                return {"msg": f"Invalid structure in object: {obj}. Expected keys: {required_keys}"}
-
-            # Additional type checks (e.g., likes, shares, comments must be integers)
+                return {"msg": f"Invalid item: {obj}. Each item must be an object."}, 400
+            if set(obj.keys()) != required_keys:
+                return {"msg": f"Invalid structure in object: {obj}. Expected keys: {required_keys}"}, 400
             if not all(isinstance(obj[key], (int, str)) for key in ["likes", "shares", "comments"]):
-                return {"msg": f"Invalid data types in object: {obj}. 'likes', 'shares', 'comments' must be integers."}
+                return {"msg": f"Invalid data types in object: {obj}. Expected integers for 'likes', 'shares', 'comments'."}, 400
 
-        # Create a collection and insert data
-        db.create_collection(filename_without_extension)
+        # Create collection and insert data in batches
+        if filename_without_extension not in db.list_collection_names():
+            db.create_collection(filename_without_extension)
+
         collection = db[filename_without_extension]
-        collection.insert_many(data)
-        return {"msg": 1}, 200
+        batch_size = 500  # Insert data in batches
+        for i in range(0, len(data), batch_size):
+            collection.insert_many(data[i:i + batch_size])
+
+        return {"msg": "Data uploaded successfully."}, 200
+
+    except json.JSONDecodeError:
+        return {"msg": "Invalid JSON format."}, 400
+    except Exception as e:
+        return {"msg": f"An error occurred: {str(e)}"}, 500
+
 
     except json.JSONDecodeError:
         return {"msg": "Invalid JSON format."}
