@@ -58,6 +58,7 @@ const SocialAnalysis = () => {
     if (result) {
       setDatasets(datasets.filter(dataset => dataset !== datasetName));
       const response=await axios(`https://superminds-1.onrender.com/deleteDataset/${datasetName}`);
+      localStorage.setItem('dataset',null);
     } else {
       alert("You chose No!");
     }

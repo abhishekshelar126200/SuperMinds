@@ -11,6 +11,7 @@ function HomePage() {
     localStorage.setItem('dataset',e.target.value)
     
     setSelectedDataset(e.target.value);
+    console.log(e.target.value)
   };
 
   useEffect(()=>{

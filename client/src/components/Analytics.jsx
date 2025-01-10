@@ -20,7 +20,6 @@ function Analytics() {
         setTotalData(result["totalData"]);
         setPostData(result["actualData"]);
         setChartData(result["metricsData"]);
-      
     };
     fetchData();
   }, []);
