@@ -9,7 +9,7 @@ import Analytics from './components/Analytics';
 import ComparisionAnalytics from './components/ComparisionAnalytics';
 import DisplayData from './components/DisplayData';
 function App() {
-  const [count, setCount] = useState(0)
+  const [selectedDataset, setSelectedDataset] = useState(localStorage.getItem('dataset') || "socialmediadata");
 
   return (
     <>
@@ -19,10 +19,10 @@ function App() {
 
         <Routes>
 
-          <Route path="/" element={<All/>} />
-          <Route path="/userdata" element={<SocialAnalysis/>} />
-          <Route path="/overallAnalytics" element={<Analytics/>} />
-          <Route path="/comparisionAnalytics" element={<ComparisionAnalytics/>} />
+          <Route path="/" element={<All setSelectedDataset={setSelectedDataset}/>} />
+          <Route path="/userdata" element={<SocialAnalysis setSelectedDataset={setSelectedDataset}/>} />
+          <Route path="/overallAnalytics" element={<Analytics selectedDataset={selectedDataset}/>} />
+          <Route path="/comparisionAnalytics" element={<ComparisionAnalytics selectedDataset={selectedDataset}/>} />
           <Route path="/viewData/:dataset" element={<DisplayData/>} />
 
         </Routes>

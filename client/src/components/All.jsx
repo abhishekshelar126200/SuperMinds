@@ -6,12 +6,12 @@ import About from './About';
 import Services from './Services';
 import Footer from './Footer';
 
-function All() {
+function All({setSelectedDataset}) {
   return (
     <div>
       <Nav />
       <div id="home">
-        <HomePage />
+        <HomePage setSelectedDataset={setSelectedDataset}/>
       </div>
       <div id="about">
         <About />

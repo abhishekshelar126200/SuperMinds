@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Nav from './Nav';
 import axios from 'axios';
 
-const SocialAnalysis = () => {
+const SocialAnalysis = ({setSelectedDataset}) => {
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState(null);
   const [postType, setPostType] = useState('');
@@ -57,8 +57,11 @@ const SocialAnalysis = () => {
     const result = window.confirm(`Are you sure you want to delete ${datasetName}`);
     if (result) {
       setDatasets(datasets.filter(dataset => dataset !== datasetName));
+      setSelectedDataset("socialmediadata");
+      setAnalyze(true);
+      setFile(null);
       const response=await axios(`https://superminds-1.onrender.com/deleteDataset/${datasetName}`);
-      localStorage.setItem('dataset',null);
+      
     } else {
       alert("You chose No!");
     }

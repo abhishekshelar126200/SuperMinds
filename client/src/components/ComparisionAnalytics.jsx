@@ -266,33 +266,6 @@ const Charts = () => {
   )
   }
   
-
-  {/* Charts */}
-  {/* <div className="row g-4"> */}
-    {/* Line Chart */}
-    {/* <div className="col-lg-6 col-md-12">
-      <div className="card shadow-sm border-0 h-100">
-        <div className="card-body">
-          <h5 className="card-title text-center mb-4 fw-bold">Reel Comparisons (Line Chart)</h5>
-          <div style={{ height: "300px" }}>
-            <Line data={lineChartData} options={chartOptions} />
-          </div>
-        </div>
-      </div>
-    </div> */}
-
-    {/* Pie Chart */}
-    {/* <div className="col-lg-6 col-md-12">
-      <div className="card shadow-sm border-0 h-100">
-        <div className="card-body">
-          <h5 className="card-title text-center mb-4 fw-bold">Engagement Breakdown (Pie Chart)</h5>
-          <div style={{ height: "300px" }}>
-            <Pie data={pieChartData} options={chartOptions} />
-          </div>
-        </div>
-      </div>
-    </div>
-  </div> */}
   {responseData ? <div className="container mt-5">
       <div className="row">
         {/* Bar Chart */}
