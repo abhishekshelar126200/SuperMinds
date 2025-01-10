@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-function HomePage({setSelectedDataset}) {
-  const [selectedDataset, setDataset] = useState(localStorage.getItem('dataset') || 'socialmediadata');
+function HomePage({setSelectedDataset,selectedDataset}) {
   const [datasets,setDatasets]=useState(JSON.parse(localStorage.getItem('datasets')) || ['socialmediadata']);
   const [fileNames,setFileNames]=useState(null)
   const handleDatasetChange = (e) => {

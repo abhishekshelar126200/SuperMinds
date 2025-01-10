@@ -19,7 +19,7 @@ function App() {
 
         <Routes>
 
-          <Route path="/" element={<All setSelectedDataset={setSelectedDataset}/>} />
+          <Route path="/" element={<All setSelectedDataset={setSelectedDataset} selectedDataset={selectedDataset}/>} />
           <Route path="/userdata" element={<SocialAnalysis setSelectedDataset={setSelectedDataset}/>} />
           <Route path="/overallAnalytics" element={<Analytics selectedDataset={selectedDataset}/>} />
           <Route path="/comparisionAnalytics" element={<ComparisionAnalytics selectedDataset={selectedDataset}/>} />
