@@ -32,15 +32,15 @@ function About() {
             {/* Stats Section */}
             <div className="row text-center mt-4">
               <div className="col-4">
-                <h3 className="fw-bold">10+</h3>
+                <h3 className="fw-bold">3+</h3>
                 <p className="text-muted">Years Experience</p>
               </div>
               <div className="col-4">
-                <h3 className="fw-bold">200+</h3>
+                <h3 className="fw-bold">10+</h3>
                 <p className="text-muted">Projects Completed</p>
               </div>
               <div className="col-4">
-                <h3 className="fw-bold">50+</h3>
+                <h3 className="fw-bold">6</h3>
                 <p className="text-muted">Team Members</p>
               </div>
             </div>
